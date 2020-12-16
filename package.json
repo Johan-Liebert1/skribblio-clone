@@ -6,12 +6,20 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:server": "nodemon src/server"
+    "dev:server": "nodemon src/server",
+    "build-styles": "gulp"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "del": "^6.0.0",
     "express": "^4.17.1",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-browserify": "^0.5.1",
+    "gulp-csso": "^4.0.1",
+    "gulp-sass": "^4.1.0",
+    "node-sass": "^5.0.0",
     "nodemon": "^2.0.6",
     "pug": "^3.0.0",
     "socket.io": "^3.0.4"
