@@ -6,11 +6,13 @@ html(lang="en")
         link(rel="stylesheet", href="styles/styles.css")
         title SkribblIO
     body
-        .loginBox#jsLogin
-            input(placeholder = "What's your nickname?", type = 'text')
+        .loginBox
+            form#jsLogin
+                input(placeholder = "What's your nickname?", type = 'text')
 
         .gameContainer#jsGame
             h1 You are Logged In
+            div#jsNotifications
 
         script(src="socket.io/socket.io.js")
         script(src="js/main.js")
