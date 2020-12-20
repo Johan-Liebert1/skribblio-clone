@@ -21,7 +21,6 @@ app.get("/", (req, res) => {
 const server = app.listen(PORT, () => `Server listening on port ${PORT}`);
 
 const io = new Server(server); // having socketIO run of top of HTTP Server
+// io is a WebSocket server running on top of HTTP server
 
-let sockets = [];
-
-io.on("connection", socket => socketController(socket));
+io.on("connection", socket => socketController(socket, io));

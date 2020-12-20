@@ -88,7 +88,7 @@ const fill = (color = null) => {
 const handleCanvasClick = () => {
 	if (filling) {
 		fill();
-		getSocket().emit(window.events.fill, { color: ctx.fillStyle });
+		getSocket().emit("fill", { color: ctx.fillStyle });
 	}
 };
 
@@ -134,7 +134,6 @@ const resetCanvas = () => fill("#fff");
 if (canvas) {
 	canvas.addEventListener("contextmenu", handleCM);
 	enableCanvas();
-	// hideControls();
 }
 // =================================== code for paint board ======================================
 
@@ -190,6 +189,8 @@ const handleNewMessage = ({ message, nickname }) => {
 
 const getSocket = () => window.socket;
 
+const handlePlayerUpdate = ({ sockets }) => null;
+
 // =============== subscribe to sockets ==================================
 const initSockets = () => {
 	getSocket().on("newUser", handleNewUser);
@@ -197,6 +198,8 @@ const initSockets = () => {
 	getSocket().on("newMessage", handleNewMessage);
 	getSocket().on("beganPath", handleBeganPath);
 	getSocket().on("strokedPath", handleStrokedPath);
+	getSocket().on("filled", handleFilled);
+	getSocket().on("playerUpdate", handlePlayerUpdate);
 };
 
 const login = nickname => {
