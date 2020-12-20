@@ -149,6 +149,10 @@ const loginForm = document.getElementById("jsLogin");
 const messages = document.getElementById("jsMessages");
 const sendMsg = document.getElementById("jsSendMsg");
 
+const playerBoard = document.getElementById("jsPBoard");
+// leader notifs
+const notifs = document.getElementById("jsNotifs");
+
 const handleFormSubmit = e => {
 	e.preventDefault();
 	const input = loginForm.querySelector("input");
@@ -190,7 +194,37 @@ const handleNewMessage = ({ message, nickname }) => {
 
 const getSocket = () => window.socket;
 
-const handlePlayerUpdate = ({ sockets }) => null;
+const addPlayers = players => {
+	playerBoard.innerHTML = "";
+	players.forEach(player => {
+		const pElement = document.createElement("span");
+		pElement.innerText = `${player.nickname}: ${player.points}`;
+		playerBoard.appendChild(pElement);
+	});
+};
+
+const handlePlayerUpdate = ({ sockets }) => addPlayers(sockets);
+
+const handleGameStarted = () => {
+	notifs.innerText = "";
+	// disable canvas events and hide the paint buttons if current socket is not the leader / painter
+	disableCanvas();
+	hideControls();
+};
+
+const handleLeaderNotification = ({ word }) => {
+	enableCanvas();
+	showControls();
+	notifs.innerText = "";
+	notifs.innerHTML = `You are the painter. Paint ${word}`;
+};
+
+const handleGameEnded = () => {
+	notifs.innerText = "Game has ended";
+	disableCanvas();
+	hideControls();
+	resetCanvas();
+};
 
 // =============== subscribe to sockets ==================================
 const initSockets = () => {
@@ -201,6 +235,9 @@ const initSockets = () => {
 	getSocket().on("strokedPath", handleStrokedPath);
 	getSocket().on("filled", handleFilled);
 	getSocket().on("playerUpdate", handlePlayerUpdate);
+	getSocket().on("gameStarted", handleGameStarted);
+	getSocket().on("leaderNotification", handleLeaderNotification);
+	getSocket().on("gameEnded", handleGameEnded);
 };
 
 const login = nickname => {

@@ -1,4 +1,10 @@
+import { chooseWord } from "./words.js";
+
 let sockets = [];
+let gameInProgress = false;
+let word, leader;
+
+const chooseLeader = () => sockets[Math.floor(Math.random() * sockets.length)];
 
 const socketController = (socket, io) => {
 	// socket.emit("Hello"); // hello is an event
@@ -20,6 +26,24 @@ const socketController = (socket, io) => {
 		io.emit(eventName, data);
 	};
 
+	const startGame = () => {
+		if (!gameInProgress) {
+			gameInProgress = true;
+			leader = chooseLeader();
+			word = chooseWord();
+
+			setTimeout(() => {
+				superBroadcast("gameStarted");
+				io.to(leader.id).emit("leaderNotification", { word }); // only send to the leader
+			}, 1500);
+		}
+	};
+
+	const endGame = () => {
+		gameInProgress = false;
+		superBroadcast("gameEnded");
+	};
+
 	socket.on("setNickname", ({ nickname }) => {
 		socket.nickname = nickname;
 
@@ -28,10 +52,24 @@ const socketController = (socket, io) => {
 		broadcast("newUser", { nickname });
 
 		superBroadcast("playerUpdate", { sockets });
+		if (sockets.length === 2) {
+			startGame();
+		}
 	});
 
 	socket.on("disconnect", () => {
 		sockets = sockets.filter(s => s.id !== socket.id);
+
+		if (sockets.length === 1) {
+			endGame();
+
+			if (leader) {
+				if (leader.id === socket.id) {
+					endGame();
+				}
+			}
+		}
+
 		broadcast("disconnected", { nickname: socket.nickname });
 		superBroadcast("playerUpdate", { sockets });
 	});
